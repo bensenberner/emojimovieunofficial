@@ -14,8 +14,6 @@ from operator import itemgetter
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--shape-predictor", required=True,
     help="path to facial landmark predictor")
-ap.add_argument("-i", "--image", required=True,
-    help="path to input image")
 args = vars(ap.parse_args())
 
 # initialize dlib's face detector (HOG-based) and then create
@@ -51,6 +49,12 @@ while True:
         # convert dlib's rectangle to a OpenCV-style bounding box
         # [i.e., (x, y, w, h)], then draw the face bounding box
         (x, y, face_w, face_h) = face_utils.rect_to_bb(rect)
+
+        # a hack, sometimes when the face goes off the screen the program crashes with
+        # error: (-215) (mtype == CV_8U || mtype == CV_8S) && _mask.sameSize(*psrc1) in function binary_op
+        if x <= 0 or y <= 0 or face_w <= 0 or face_h <= 0:
+            break
+
         cv2.rectangle(image, (x, y), (x + face_w, y + face_h), (0, 255, 0), 2)
 
         # show the face number
@@ -64,17 +68,13 @@ while True:
         emojiImg = emojiImg[:, :, 0:3]
         emojiMaskInv = cv2.bitwise_not(emojiMask)
 
-
         # the region of interest is the face
         roi_gray = gray[y:y+face_h, x:x+face_w]
-        # TODO: hack
+        # TODO: hack (why?)
         roi_color = image[y:y+face_h, x:x+face_w]
 
         # TODO: this will be different if I choose not to use the face bounding box
-        # print(roi_color.shape)
-        # print(emojiMaskInv.shape)
         roi_bg = cv2.bitwise_and(roi_color, roi_color, mask = emojiMaskInv)
-
         roi_fg = cv2.bitwise_and(emojiImg, emojiImg, mask = emojiMask)
         dst = cv2.add(roi_bg, roi_fg)
         roi_color[:,:] = dst
