@@ -1,3 +1,4 @@
 .DS_Store
-images/*.png
+images/emoji/*
+images/test1.png
 shape_predictor_68_face_landmarks.dat
