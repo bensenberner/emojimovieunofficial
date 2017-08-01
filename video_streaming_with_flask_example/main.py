@@ -16,7 +16,16 @@
 from flask import Flask, render_template, Response
 from camera import VideoCamera
 
+import cv2
+import dlib
+
 app = Flask(__name__)
+# TODO: remove hardcodes
+original_emoji_path = "/Users/benlerner/Desktop/computer_vision/emoji/images/emoji/Neutral_Face_Emoji.png"
+original_emoji_img = cv2.imread(original_emoji_path, -1)
+dlib_pred_path = "/Users/benlerner/Desktop/computer_vision/emoji/video_streaming_with_flask_example/shape_predictor_68_face_landmarks.dat"
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(dlib_pred_path)
 
 @app.route('/')
 def index():
@@ -30,7 +39,7 @@ def gen(camera):
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen(VideoCamera()),
+    return Response(gen(VideoCamera(original_emoji_img, detector, predictor)),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
