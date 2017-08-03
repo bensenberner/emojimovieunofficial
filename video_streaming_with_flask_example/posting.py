@@ -14,25 +14,37 @@
 # 2. Run "python main.py".
 # 3. Navigate the browser to the local webpage.
 from flask import Flask, render_template, Response, request
+from camera import process_img
 import base64
+import cv2
+import dlib
 # from camera import VideoCamera
 
 app = Flask(__name__)
+
+# TODO: remove hardcodes
+original_emoji_path = "/Users/benlerner/Desktop/computer_vision/emoji/images/emoji/Neutral_Face_Emoji.png"
+original_emoji_img = cv2.imread(original_emoji_path, -1)
+dlib_pred_path = "/Users/benlerner/Desktop/computer_vision/emoji/video_streaming_with_flask_example/shape_predictor_68_face_landmarks.dat"
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(dlib_pred_path)
 
 @app.route('/', methods = ['GET', 'POST'])
 def index():
     if request.method == 'POST':
         screenshot_raw = request.form['screenshot']
         head, screenshot_b64 = screenshot_raw.split(',', 1)
-        with open('imageShouldSave.png', 'wb') as fh:
-            fh.write(base64.b64decode(screenshot_b64))
+        screenshot_decoded = base64.b64decode(screenshot_b64)
             # fh.write(str(screenshot_raw.split(',')[1].decode('base64')))
         # screenshot = base64.b64decode(screenshot_raw)
         # print(screenshot)
         # with open("imageToSave.png", "wb") as fh:
-            # fh.write(screenshot)
+        # fh.write(screenshot)
 
-        return "received a post request!"
+        processed_screenshot = process_img(detector, predictor,
+                screenshot_decoded, original_emoji_img)
+        final_img = base64.b64encode(processed_screenshot)
+        return final_img
     else:
         # return "received a GET request"
         return render_template('test.html')

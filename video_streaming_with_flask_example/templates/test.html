@@ -8,20 +8,23 @@
     <div id="my_result"></div>
 
     <script src="static/js/webcam.js"></script>
+    <!--TODO: take this out of html?-->
     <script language="JavaScript">
       Webcam.attach( '#my_camera' );
 
       function take_snapshot() {
         Webcam.snap( function(data_uri) {
-          <!--document.getElementById('my_result').innerHTML = '<img src="'+data_uri+'"/>';-->
           <!--console.log(data_uri)-->
             $.post(
-              "http://0.0.0.0:5000/",
+              "{{ url_for('index') }}",
               {
                 screenshot: data_uri
               },
-              function(data, status) {
-                console.log("Data: " + data + "\nStatus: " + status);
+              function(processed_img, status) {
+                <!--console.log("Data: " + data + "\nStatus: " + status);-->
+                console.log(status);
+                // TODO: change this so that it isn't jpeg?
+                document.getElementById('my_result').innerHTML = '<img src="data:image/jpeg;base64,'+processed_img+'"/>';
               }
             );
         } );
