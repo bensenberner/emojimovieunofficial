@@ -14,6 +14,7 @@
 # 2. Run "python main.py".
 # 3. Navigate the browser to the local webpage.
 from flask import Flask, render_template, Response, request
+import base64
 # from camera import VideoCamera
 
 app = Flask(__name__)
@@ -21,10 +22,20 @@ app = Flask(__name__)
 @app.route('/', methods = ['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        screenshot_raw = request.form['screenshot']
+        head, screenshot_b64 = screenshot_raw.split(',', 1)
+        with open('imageShouldSave.png', 'wb') as fh:
+            fh.write(base64.b64decode(screenshot_b64))
+            # fh.write(str(screenshot_raw.split(',')[1].decode('base64')))
+        # screenshot = base64.b64decode(screenshot_raw)
+        # print(screenshot)
+        # with open("imageToSave.png", "wb") as fh:
+            # fh.write(screenshot)
+
         return "received a post request!"
     else:
         # return "received a GET request"
-        return render_template('posting.html')
+        return render_template('test.html')
     # return render_template('index.html')
 
 # def gen(camera):
