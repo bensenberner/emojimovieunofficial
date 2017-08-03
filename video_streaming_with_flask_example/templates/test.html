@@ -4,6 +4,7 @@
   </head>
   <body>
 
+    <h1> Ben Lerner's Emojification Station </h1>
     <div id="my_camera" style="width:320px; height:240px;"></div>
     <div id="my_result"></div>
 
@@ -21,9 +22,6 @@
                 screenshot: data_uri
               },
               function(processed_img, status) {
-                <!--console.log("Data: " + data + "\nStatus: " + status);-->
-                console.log(status);
-                // TODO: change this so that it isn't jpeg?
                 document.getElementById('my_result').innerHTML = '<img src="data:image/jpeg;base64,'+processed_img+'"/>';
               }
             );
@@ -32,7 +30,7 @@
       }
     </script>
 
-    <a href="javascript:void(take_snapshot())">Take Snapshot</a>
+    <a href="javascript:void(take_snapshot())">Emojify yourself</a>
 
   </body>
 </html>
