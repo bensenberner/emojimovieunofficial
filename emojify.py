@@ -1,4 +1,3 @@
-# TODO: originated from pyimagesearch and mustache.io
 from imutils import face_utils
 import argparse
 import cv2
@@ -19,7 +18,7 @@ def process_img(detector, predictor, old_img, original_emoji_img):
         raise TypeError("Input image datatype not supported")
         return None
     shrunk_img = imutils.resize(img_decoded, width=600, height=400)
-    emojified_img = draw_faces(shrunk_img, detector, predictor, original_emoji_img)
+    emojified_img = draw_faces(detector, predictor, shrunk_img, original_emoji_img)
 
     # TODO: will use this to compress the picture and improve speed (maybe)
     params = {
@@ -29,14 +28,14 @@ def process_img(detector, predictor, old_img, original_emoji_img):
     ret, jpeg = cv2.imencode('.jpg', emojified_img)
     return jpeg.tobytes()
 
-def draw_faces(image, detector, predictor, originalEmojiImg):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def draw_faces(detector, predictor, webcam_img, original_emoji_img):
+    gray = cv2.cvtColor(webcam_img, cv2.COLOR_BGR2GRAY)
 
-    # detect faces in the grayscale image
-    rects = detector(gray, 1)
+    # detect faces in the grayscale webcam_img
+    face_rects = detector(gray, 1)
 
     # loop over the face detections
-    for (i, rect) in enumerate(rects):
+    for (i, rect) in enumerate(face_rects):
 
         # determine the facial landmarks for the face region, then
         # convert the facial landmark (x, y)-coordinates to a NumPy
@@ -45,7 +44,7 @@ def draw_faces(image, detector, predictor, originalEmojiImg):
         shape = face_utils.shape_to_np(shape)
 
         # convert dlib's rectangle to a OpenCV-style bounding box
-        # [i.e., (x, y, w, h)], then draw the face bounding box
+        # [i.e., (x, y, w, h)]
         (x, y, face_w, face_h) = face_utils.rect_to_bb(rect)
 
         # a hack, sometimes when the face goes off the screen the program crashes with
@@ -54,8 +53,8 @@ def draw_faces(image, detector, predictor, originalEmojiImg):
         if x <= 0 or y <= 0 or face_w <= 0 or face_h <= 0:
             break
 
-        # configure emoji img
-        emojiImg = imutils.resize(originalEmojiImg, width=face_w, height=face_h)
+        # resize the emoji img to match the face
+        emojiImg = imutils.resize(original_emoji_img, width=face_w, height=face_h)
         face_w, face_h, face_d = emojiImg.shape
         emojiMask = emojiImg[:, :, 3]
         emojiImg = emojiImg[:, :, 0:3]
@@ -63,13 +62,12 @@ def draw_faces(image, detector, predictor, originalEmojiImg):
 
         # the region of interest is the face
         roi_gray = gray[y:y+face_h, x:x+face_w]
-        # TODO: hack (why?)
-        roi_color = image[y:y+face_h, x:x+face_w]
+        roi_color = webcam_img[y:y+face_h, x:x+face_w]
 
-        # TODO: this will be different if I choose not to use the face bounding box
+        # overlay the emoji on top of the face
         roi_bg = cv2.bitwise_and(roi_color, roi_color, mask = emojiMaskInv)
         roi_fg = cv2.bitwise_and(emojiImg, emojiImg, mask = emojiMask)
         dst = cv2.add(roi_bg, roi_fg)
         roi_color[:,:] = dst
 
-    return image
+    return webcam_img

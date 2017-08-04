@@ -1,35 +1,45 @@
 <html>
   <head>
+    <title>Emoji Movie Unofficial Promo</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="static/js/webcam.min.js"></script>
+
+    <!--TODO: move this externally-->
+    <style type="text/css">
+      body { font-family: Helvetica, sans-serif; }
+      #result { float:left; margin:20px; padding:20px; border:1px solid; background:#ccc; }
+      #emojify_button { float:center; margin:20px; padding:20px; }
+    </style>
+
   </head>
   <body>
 
     <h1> Ben Lerner's Emojification Station </h1>
-    <div id="my_camera" style="width:320px; height:240px;"></div>
-    <div id="my_result"></div>
+    <div id="live_feed" style="float:center; width:600; height:400;"></div>
 
-    <!--TODO: take this out of html?-->
     <script language="JavaScript">
-      Webcam.attach( '#my_camera' );
+      Webcam.attach( '#live_feed' );
 
       function take_snapshot() {
         Webcam.snap( function(data_uri) {
             $.post(
-              "{{ url_for('index') }}",
+              "{{ url_for('emojify') }}",
               {
                 screenshot: data_uri
               },
-              function(processed_img, status) {
-                document.getElementById('my_result').innerHTML = '<img src="data:image/jpeg;base64,'+processed_img+'"/>';
+              function(processed_img_b64, status) {
+                img_src = "data:image/jpeg;base64," + processed_img_b64
+                document.getElementById('result').innerHTML = '<img src="'+img_src+'"\>';
               }
             );
         } );
-
       }
     </script>
 
-    <a href="javascript:void(take_snapshot())">Emojify yourself</a>
+    <div id="emojify_button">
+      <a href="javascript:void(take_snapshot())">Emojify yourself</a>
+    </div>
+    <div id="result">Click the button to emojify yourself!</div>
 
   </body>
 </html>
