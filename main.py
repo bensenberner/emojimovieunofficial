@@ -18,14 +18,13 @@ def index():
         final_img = base64.b64encode(processed_screenshot)
         return final_img
     else:
-        # return "received a GET request"
-        return render_template('test.html')
+        return render_template('index.html')
 
 if __name__ == '__main__':
     # TODO: remove hardcodes, read from args instead
-    original_emoji_path = "/Users/benlerner/Desktop/computer_vision/emoji/images/emoji/Neutral_Face_Emoji.png"
+    original_emoji_path = "static/img/Neutral_Face_Emoji.png"
     original_emoji_img = cv2.imread(original_emoji_path, -1)
-    dlib_pred_path = "/Users/benlerner/Desktop/computer_vision/emoji/video_streaming_with_flask_example/shape_predictor_68_face_landmarks.dat"
+    dlib_pred_path = "shape_predictor_68_face_landmarks.dat"
     predictor = dlib.shape_predictor(dlib_pred_path)
     detector = dlib.get_frontal_face_detector()
     app.run(host='localhost', debug=True)

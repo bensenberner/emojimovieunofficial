@@ -1,6 +1,7 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="static/js/webcam.min.js"></script>
   </head>
   <body>
 
@@ -8,14 +9,12 @@
     <div id="my_camera" style="width:320px; height:240px;"></div>
     <div id="my_result"></div>
 
-    <script src="static/js/webcam.js"></script>
     <!--TODO: take this out of html?-->
     <script language="JavaScript">
       Webcam.attach( '#my_camera' );
 
       function take_snapshot() {
         Webcam.snap( function(data_uri) {
-          <!--console.log(data_uri)-->
             $.post(
               "{{ url_for('index') }}",
               {
