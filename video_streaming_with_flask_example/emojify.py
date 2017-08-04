@@ -1,12 +1,33 @@
-# USAGE
-# python facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat --image images/example_01.jpg
-
-# import the necessary packages
+# TODO: originated from pyimagesearch and mustache.io
 from imutils import face_utils
 import argparse
 import cv2
 import dlib
 import imutils
+import numpy as np
+
+def process_img(detector, predictor, old_img, original_emoji_img):
+    # Typical case
+    if type(old_img) == bytes:
+        img_arr = np.fromstring(old_img, np.uint8)
+        img_decoded = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+    # just in case it's already an ndarray
+    elif type(old_image) == np.ndarray:
+        img_decoded = old_image
+    # this shouldn't ever happen
+    else:
+        raise TypeError("Input image datatype not supported")
+        return None
+    shrunk_img = imutils.resize(img_decoded, width=600, height=400)
+    emojified_img = draw_faces(shrunk_img, detector, predictor, original_emoji_img)
+
+    # TODO: will use this to compress the picture and improve speed (maybe)
+    params = {
+        "CV_IMWRITE_JPEG_QUALITY": 50
+    }
+    # encoding ot jpeg to display properly
+    ret, jpeg = cv2.imencode('.jpg', emojified_img)
+    return jpeg.tobytes()
 
 def draw_faces(image, detector, predictor, originalEmojiImg):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -52,37 +73,3 @@ def draw_faces(image, detector, predictor, originalEmojiImg):
         roi_color[:,:] = dst
 
     return image
-
-def emojify(detector, predictor, originalEmojiImg):
-    video_capture = cv2.VideoCapture(0)
-    while True:
-        ret, image = video_capture.read()
-
-        image = imutils.resize(image, width=500)
-        draw_faces(image, detector, predictor, originalEmojiImg)
-
-        cv2.imshow('Video', image)
-        if cv2.waitKey(1) == ord('q'):
-            break
-
-    video_capture.release()
-    cv2.destroyAllWindows()
-
-def main():
-    # construct the argument parser and parse the arguments
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-p", "--shape-predictor", required=True,
-        help="path to facial landmark predictor")
-    args = vars(ap.parse_args())
-
-    # initialize dlib's face detector (HOG-based) and then create
-    # the facial landmark predictor
-    detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor(args["shape_predictor"])
-
-    # TODO: replace with a real path. maybe use a command line path?
-    originalEmojiImg = cv2.imread("/Users/benlerner/Desktop/computer_vision/emoji/images/emoji/Neutral_Face_Emoji.png", -1)
-    emojify(detector, predictor, originalEmojiImg)
-
-if __name__ == "__main__":
-    main()

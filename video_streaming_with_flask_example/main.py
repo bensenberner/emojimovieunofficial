@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, request
-from camera import process_img
+from emojify import process_img
 import base64
 import cv2
 import dlib
