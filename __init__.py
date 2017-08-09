@@ -42,7 +42,9 @@ def emojify():
         return render_template('index.html')
 
 def load_emoji_imgs():
-    emotions = ["happy", "sad", "neutral"]
+    # TODO: disgust
+    emotions = ["anger", "fear", "low_happy", "neutral", "surprise",
+            "contempt", "high_happy", "med_happy", "sadness"]
     emoji_imgs = {}
     for emotion in emotions:
         path = "static/img/" + emotion + ".png"
@@ -52,7 +54,6 @@ def load_emoji_imgs():
 
 if __name__ == '__main__':
     # TODO: remove hardcodes, read from args instead
-    original_emoji_path = "static/img/neutral.png"
     emoji_imgs = load_emoji_imgs()
     dlib_pred_path = "shape_predictor_68_face_landmarks.dat"
     predictor = dlib.shape_predictor(dlib_pred_path)

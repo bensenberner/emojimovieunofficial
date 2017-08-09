@@ -39,19 +39,21 @@ def draw_faces(detector, predictor, webcam_img, emoji_imgs, analysis):
     # for (i, rect) in enumerate(face_rects):
     for (i, face_dict) in enumerate(analysis):
         face_attr = face_dict['faceAttributes']
+        smile_val = face_attr['smile']
         strongest_emotion = max(face_attr['emotion'],
                 key=face_attr['emotion'].get)
         if strongest_emotion == "happiness":
-            emoji_img = emoji_imgs['happy']
-        elif strongest_emotion == "neutral":
-            emoji_img = emoji_imgs["neutral"]
-        elif strongest_emotion == "sadness":
-            emoji_img = emoji_imgs["sad"]
+            if smile_val < 0.25:
+                emoji_img = emoji_imgs['low_happy']
+            elif 0.25 <= smile_val <= 0.75:
+                emoji_img = emoji_imgs['med_happy']
+            else:
+                emoji_img = emoji_imgs['high_happy']
+        elif strongest_emotion in emoji_imgs:
+            emoji_img = emoji_imgs[strongest_emotion]
         else:
             emoji_img = emoji_imgs["neutral"]
-        # convert dlib's rectangle to a OpenCV-style bounding box
-        # [i.e., (x, y, w, h)]
-        # (x, y, face_w, face_h) = face_utils.rect_to_bb(rect)
+
         rect_dict = face_dict['faceRectangle']
         x, y, face_w, face_h = rect_dict['left'], rect_dict['top'], rect_dict['width'], rect_dict['height']
 
