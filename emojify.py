@@ -1,11 +1,9 @@
-from imutils import face_utils
 import argparse
 import cv2
-import dlib
 import imutils
 import numpy as np
 
-def process_img(detector, predictor, old_img, emoji_imgs, analysis):
+def process_img(old_img, emoji_imgs, analysis):
     # Typical case
     if type(old_img) == bytes:
         img_arr = np.fromstring(old_img, np.uint8)
@@ -18,8 +16,7 @@ def process_img(detector, predictor, old_img, emoji_imgs, analysis):
         raise TypeError("Input image datatype not supported")
         return None
     shrunk_img = imutils.resize(img_decoded, width=600, height=400)
-    emojified_img = draw_faces(detector, predictor, shrunk_img,
-            emoji_imgs, analysis)
+    emojified_img = draw_faces(shrunk_img, emoji_imgs, analysis)
 
     # TODO: will use this to compress the picture and improve speed (maybe)
     params = {
@@ -29,7 +26,7 @@ def process_img(detector, predictor, old_img, emoji_imgs, analysis):
     ret, jpeg = cv2.imencode('.jpg', emojified_img)
     return jpeg.tobytes()
 
-def draw_faces(detector, predictor, webcam_img, emoji_imgs, analysis):
+def draw_faces(webcam_img, emoji_imgs, analysis):
     gray = cv2.cvtColor(webcam_img, cv2.COLOR_BGR2GRAY)
 
     # detect faces in the grayscale webcam_img
