@@ -29,11 +29,7 @@ def process_img(old_img, emoji_imgs, analysis):
 def draw_faces(webcam_img, emoji_imgs, analysis):
     gray = cv2.cvtColor(webcam_img, cv2.COLOR_BGR2GRAY)
 
-    # detect faces in the grayscale webcam_img
-    # face_rects = detector(gray, 1)
-
-    # loop over the face detections
-    # for (i, rect) in enumerate(face_rects):
+    # TODO: use the roll / yaw
     for (i, face_dict) in enumerate(analysis):
         face_attr = face_dict['faceAttributes']
         smile_val = face_attr['smile']
