@@ -9,11 +9,22 @@ import cognitive_face as CF
 import cv2
 import dlib
 
+import pprint
+pp = pprint.PrettyPrinter()
+
 # TODO: consolidate strings
 app = Flask(__name__, static_url_path='/static')
 static_folder = 'static/'
 # TODO: TAKE THIS OUT OF PROD
 CF_KEY = os.environ["CF_KEY"]
+# print(CF_KEY)
+CF.Key.set(CF_KEY)
+
+class pseudofile(object):
+    def __init__(self, data):
+        self.data = data
+    def read(self):
+        return self.data
 
 @app.route('/')
 def index():
@@ -25,13 +36,9 @@ def emojify():
         screenshot_raw = request.form['screenshot']
         head, screenshot_b64 = screenshot_raw.split(',', 1)
         screenshot_decoded = base64.b64decode(screenshot_b64)
-        # save screenshot for API call
-        curr_time = str(int(datetime.timestamp(datetime.now())*1000000))
-        filename = curr_time + '.jpg'
-        full_file_path = static_folder + filename
-        with open(full_file_path, 'wb') as f:
-            f.write(screenshot_decoded)
-        print(url_for("static", filename = filename))
+        image_obj = pseudofile(screenshot_decoded)
+        result = CF.face.detect(image_obj, attributes='smile,emotion')
+        pp.pprint(result)
         processed_screenshot = process_img(detector, predictor,
                 screenshot_decoded, original_emoji_img)
         final_img = base64.b64encode(processed_screenshot)
