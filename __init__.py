@@ -5,7 +5,7 @@ import base64
 import cv2
 import dlib
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 @app.route('/')
 def index():
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     predictor = dlib.shape_predictor(dlib_pred_path)
     detector = dlib.get_frontal_face_detector()
 
-    app.run(host='localhost', debug=True)
+    app.run(host='0.0.0.0', port=80)

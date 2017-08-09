@@ -1,6 +1,5 @@
 .DS_Store
 __pycache__
 *.mjpeg
-images/emoji/*
-images/test1.png
+images/*
 shape_predictor_68_face_landmarks.dat
