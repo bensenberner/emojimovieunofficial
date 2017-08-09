@@ -36,9 +36,9 @@ def draw_faces(webcam_img, emoji_imgs, analysis):
         strongest_emotion = max(face_attr['emotion'],
                 key=face_attr['emotion'].get)
         if strongest_emotion == "happiness":
-            if smile_val < 0.25:
+            if smile_val < 0.8:
                 emoji_img = emoji_imgs['low_happy']
-            elif 0.25 <= smile_val <= 0.75:
+            elif 0.8 <= smile_val <= 0.9:
                 emoji_img = emoji_imgs['med_happy']
             else:
                 emoji_img = emoji_imgs['high_happy']
