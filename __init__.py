@@ -9,15 +9,11 @@ import cognitive_face as CF
 import cv2
 import dlib
 
-import pprint
-pp = pprint.PrettyPrinter()
-
 # TODO: consolidate strings
 app = Flask(__name__, static_url_path='/static')
 static_folder = 'static/'
 # TODO: TAKE THIS OUT OF PROD
 CF_KEY = os.environ["CF_KEY"]
-# print(CF_KEY)
 CF.Key.set(CF_KEY)
 
 class pseudofile(object):
@@ -38,7 +34,6 @@ def emojify():
         screenshot_decoded = base64.b64decode(screenshot_b64)
         image_obj = pseudofile(screenshot_decoded)
         analysis = CF.face.detect(image_obj, attributes='smile,emotion')
-        pp.pprint(analysis)
         processed_screenshot = process_img(detector, predictor,
                 screenshot_decoded, emoji_imgs, analysis)
         final_img = base64.b64encode(processed_screenshot)
@@ -59,7 +54,6 @@ if __name__ == '__main__':
     # TODO: remove hardcodes, read from args instead
     original_emoji_path = "static/img/neutral.png"
     emoji_imgs = load_emoji_imgs()
-    # original_emoji_img = cv2.imread(original_emoji_path, -1)
     dlib_pred_path = "shape_predictor_68_face_landmarks.dat"
     predictor = dlib.shape_predictor(dlib_pred_path)
     detector = dlib.get_frontal_face_detector()
