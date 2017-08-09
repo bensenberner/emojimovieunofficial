@@ -37,19 +37,29 @@ def emojify():
         head, screenshot_b64 = screenshot_raw.split(',', 1)
         screenshot_decoded = base64.b64decode(screenshot_b64)
         image_obj = pseudofile(screenshot_decoded)
-        result = CF.face.detect(image_obj, attributes='smile,emotion')
-        pp.pprint(result)
+        analysis = CF.face.detect(image_obj, attributes='smile,emotion')
+        pp.pprint(analysis)
         processed_screenshot = process_img(detector, predictor,
-                screenshot_decoded, original_emoji_img)
+                screenshot_decoded, emoji_imgs, analysis)
         final_img = base64.b64encode(processed_screenshot)
         return final_img
     else:
         return render_template('index.html')
 
+def load_emoji_imgs():
+    emotions = ["happy", "sad", "neutral"]
+    emoji_imgs = {}
+    for emotion in emotions:
+        path = "static/img/" + emotion + ".png"
+        emoji_img = cv2.imread(path, -1)
+        emoji_imgs[emotion] = emoji_img
+    return emoji_imgs
+
 if __name__ == '__main__':
     # TODO: remove hardcodes, read from args instead
-    original_emoji_path = "static/img/Neutral_Face_Emoji.png"
-    original_emoji_img = cv2.imread(original_emoji_path, -1)
+    original_emoji_path = "static/img/neutral.png"
+    emoji_imgs = load_emoji_imgs()
+    # original_emoji_img = cv2.imread(original_emoji_path, -1)
     dlib_pred_path = "shape_predictor_68_face_landmarks.dat"
     predictor = dlib.shape_predictor(dlib_pred_path)
     detector = dlib.get_frontal_face_detector()

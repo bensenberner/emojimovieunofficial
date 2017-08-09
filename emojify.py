@@ -5,7 +5,7 @@ import dlib
 import imutils
 import numpy as np
 
-def process_img(detector, predictor, old_img, original_emoji_img):
+def process_img(detector, predictor, old_img, emoji_imgs, analysis):
     # Typical case
     if type(old_img) == bytes:
         img_arr = np.fromstring(old_img, np.uint8)
@@ -18,7 +18,8 @@ def process_img(detector, predictor, old_img, original_emoji_img):
         raise TypeError("Input image datatype not supported")
         return None
     shrunk_img = imutils.resize(img_decoded, width=600, height=400)
-    emojified_img = draw_faces(detector, predictor, shrunk_img, original_emoji_img)
+    emojified_img = draw_faces(detector, predictor, shrunk_img,
+            emoji_imgs, analysis)
 
     # TODO: will use this to compress the picture and improve speed (maybe)
     params = {
@@ -28,24 +29,31 @@ def process_img(detector, predictor, old_img, original_emoji_img):
     ret, jpeg = cv2.imencode('.jpg', emojified_img)
     return jpeg.tobytes()
 
-def draw_faces(detector, predictor, webcam_img, original_emoji_img):
+def draw_faces(detector, predictor, webcam_img, emoji_imgs, analysis):
     gray = cv2.cvtColor(webcam_img, cv2.COLOR_BGR2GRAY)
 
     # detect faces in the grayscale webcam_img
-    face_rects = detector(gray, 1)
+    # face_rects = detector(gray, 1)
 
     # loop over the face detections
-    for (i, rect) in enumerate(face_rects):
-
-        # determine the facial landmarks for the face region, then
-        # convert the facial landmark (x, y)-coordinates to a NumPy
-        # array
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
-
+    # for (i, rect) in enumerate(face_rects):
+    for (i, face_dict) in enumerate(analysis):
+        face_attr = face_dict['faceAttributes']
+        strongest_emotion = max(face_attr['emotion'],
+                key=face_attr['emotion'].get)
+        if strongest_emotion == "happiness":
+            emoji_img = emoji_imgs['happy']
+        elif strongest_emotion == "neutral":
+            emoji_img = emoji_imgs["neutral"]
+        elif strongest_emotion == "sadness":
+            emoji_img = emoji_imgs["sad"]
+        else:
+            emoji_img = emoji_imgs["neutral"]
         # convert dlib's rectangle to a OpenCV-style bounding box
         # [i.e., (x, y, w, h)]
-        (x, y, face_w, face_h) = face_utils.rect_to_bb(rect)
+        # (x, y, face_w, face_h) = face_utils.rect_to_bb(rect)
+        rect_dict = face_dict['faceRectangle']
+        x, y, face_w, face_h = rect_dict['left'], rect_dict['top'], rect_dict['width'], rect_dict['height']
 
         # a hack, sometimes when the face goes off the screen the program crashes with
         # error: (-215) (mtype == CV_8U || mtype == CV_8S) && _mask.sameSize(*psrc1) in function binary_op
@@ -54,7 +62,7 @@ def draw_faces(detector, predictor, webcam_img, original_emoji_img):
             break
 
         # resize the emoji img to match the face
-        emojiImg = imutils.resize(original_emoji_img, width=face_w, height=face_h)
+        emojiImg = imutils.resize(emoji_img, width=face_w, height=face_h)
         face_w, face_h, face_d = emojiImg.shape
         emojiMask = emojiImg[:, :, 3]
         emojiImg = emojiImg[:, :, 0:3]
