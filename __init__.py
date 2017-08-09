@@ -8,6 +8,7 @@ import os
 
 # TODO: consolidate strings
 app = Flask(__name__, static_url_path='/static')
+app_path = "./" if platform == 'darwin' else "/var/www/emojimovieunofficial/emojimovieunofficial/"
 
 CF_KEY = os.environ["CF_KEY"]
 CF.Key.set(CF_KEY)
@@ -18,7 +19,7 @@ def load_emoji_imgs():
     emotions = ["anger", "fear", "low_happy", "neutral", "surprise", "contempt", "high_happy", "med_happy", "sadness"]
     emoji_imgs = {}
     for emotion in emotions:
-        path = "/var/www/emojimovieunofficial/emojimovieunofficial/static/img/" + emotion + ".png"
+        path = "static/img/" + emotion + ".png"
         emoji_img = cv2.imread(path, -1)
         emoji_imgs[emotion] = emoji_img
     current_app.emoji_imgs = emoji_imgs

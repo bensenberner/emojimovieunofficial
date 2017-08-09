@@ -29,9 +29,6 @@ def process_img(old_img, emoji_imgs, analysis):
 def draw_faces(webcam_img, emoji_imgs, analysis):
     gray = cv2.cvtColor(webcam_img, cv2.COLOR_BGR2GRAY)
 
-    # detect faces in the grayscale webcam_img
-    # face_rects = detector(gray, 1)
-
     # loop over the face detections
     # for (i, rect) in enumerate(face_rects):
     for (i, face_dict) in enumerate(analysis):
@@ -40,9 +37,9 @@ def draw_faces(webcam_img, emoji_imgs, analysis):
         strongest_emotion = max(face_attr['emotion'],
                 key=face_attr['emotion'].get)
         if strongest_emotion == "happiness":
-            if smile_val < 0.25:
+            if smile_val < 0.8:
                 emoji_img = emoji_imgs['low_happy']
-            elif 0.25 <= smile_val <= 0.75:
+            elif 0.8 <= smile_val <= 0.9:
                 emoji_img = emoji_imgs['med_happy']
             else:
                 emoji_img = emoji_imgs['high_happy']
