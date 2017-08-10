@@ -19,7 +19,7 @@ def load_emoji_imgs():
     emotions = ["anger", "fear", "low_happy", "neutral", "surprise", "contempt", "high_happy", "med_happy", "sadness"]
     emoji_imgs = {}
     for emotion in emotions:
-        path = "static/img/" + emotion + ".png"
+        path = app_path + "static/img/" + emotion + ".png"
         emoji_img = cv2.imread(path, -1)
         emoji_imgs[emotion] = emoji_img
     current_app.emoji_imgs = emoji_imgs
@@ -49,5 +49,5 @@ def emojify():
         return render_template('index.html')
 
 if __name__ == '__main__':
-    port = 5000 if platform == 'darwin' else 80
+    port = 5000 if platform == 'darwin' else 5001
     app.run(host='0.0.0.0', port=port)
