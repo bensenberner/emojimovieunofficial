@@ -15,7 +15,7 @@ CF.Key.set(CF_KEY)
 
 @app.before_first_request
 def load_emoji_imgs():
-    # TODO: disgust
+    # TODO: disgust and don't hardcode these (that's disgusting in itself)
     emotions = ["anger", "fear", "low_happy", "neutral", "surprise", "contempt", "high_happy", "med_happy", "sadness"]
     emoji_imgs = {}
     for emotion in emotions:

@@ -18,10 +18,6 @@ def process_img(old_img, emoji_imgs, analysis):
     shrunk_img = imutils.resize(img_decoded, width=600, height=400)
     emojified_img = draw_faces(shrunk_img, emoji_imgs, analysis)
 
-    # TODO: will use this to compress the picture and improve speed (maybe)
-    params = {
-        "CV_IMWRITE_JPEG_QUALITY": 50
-    }
     # encoding ot jpeg to display properly
     ret, jpeg = cv2.imencode('.jpg', emojified_img)
     return jpeg.tobytes()
