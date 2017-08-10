@@ -41,6 +41,7 @@ def emojify():
         head, screenshot_b64 = screenshot_raw.split(',', 1)
         screenshot_decoded = base64.b64decode(screenshot_b64)
         image_obj = pseudofile(screenshot_decoded)
+        # TODO: try catch in case the call fails
         analysis = CF.face.detect(image_obj, attributes='smile,emotion')
         processed_screenshot = process_img(screenshot_decoded, current_app.emoji_imgs, analysis)
         final_img = base64.b64encode(processed_screenshot)
