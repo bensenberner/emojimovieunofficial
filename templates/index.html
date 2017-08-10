@@ -1,45 +1,69 @@
 <html>
   <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Emoji Movie Unofficial Promo</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--TODO: make a thinking emoji favicon-->
+    <!--<link rel="icon" href="../../favicon.ico">-->
+
+    <!--jquery-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!--webcam javascript-->
     <script src="static/js/webcam.min.js"></script>
 
-    <!--TODO: move this externally-->
-    <style type="text/css">
-      body { font-family: Helvetica, sans-serif; }
-      #result { float:left; margin:20px; padding:20px; border:1px solid; background:#ccc; }
-      #emojify_button { float:center; margin:20px; padding:20px; }
-    </style>
+    <!--bootstrap-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
   </head>
   <body>
 
-    <h1> Ben Lerner's Emojification Station </h1>
-    <div id="live_feed" style="float:center; width:600; height:400;"></div>
+    <div class='row'>
+      <h1 class="text-center">Emojification Station</h1>
+    </div>
+    <div class='row'>
+      <div id="live_feed" class='col-md-6 col-md-offset-3' style="width:600; height:400;"></div>
+    </div>
 
     <script language="JavaScript">
       Webcam.attach( '#live_feed' );
 
       function take_snapshot() {
         Webcam.snap( function(data_uri) {
-            $.post(
-              "{{ url_for('emojify') }}",
-              {
-                screenshot: data_uri
-              },
-              function(processed_img_b64, status) {
-                img_src = "data:image/jpeg;base64," + processed_img_b64
-                document.getElementById('result').innerHTML = '<img src="'+img_src+'"\>';
-              }
-            );
+          $.post(
+            "{{ url_for('emojify') }}",
+            {
+              screenshot: data_uri
+            },
+            function(processed_img_b64, status) {
+              img_src = "data:image/jpeg;base64," + processed_img_b64
+              document.getElementById('result').innerHTML = '<img src="'+img_src+'"\>';
+            }
+          );
         } );
       }
     </script>
 
-    <div id="emojify_button">
-      <a href="javascript:void(take_snapshot())">Emojify yourself</a>
+    <div class='row'>
+      <div id="emojify_button" class='col-md-1 col-md-offset-5'>
+        <!--# TODO make into a button-->
+        <a class="btn btn-primary" href="javascript:void(take_snapshot())">Emojify yourself</a>
+      </div>
     </div>
-    <div id="result">Click the button to emojify yourself!</div>
+    <div class='row'>
+      <div id="result" class="col-md-6 col-md-offset-3" style="width:600; height:400;">
+        <h2 class="text-center">Click the button to emojify yourself!</h2>
+      </div>
+    </div>
 
   </body>
 </html>
